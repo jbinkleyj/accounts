@@ -1,3 +1,4 @@
+<?php
 /**
  * CakePHP Accounts Plugin
  * http://github.com/adrianedworthy/accounts
@@ -10,7 +11,6 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  */
-<?php
 class Login {
 
 	function &getInstance($data = null) {
