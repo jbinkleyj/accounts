@@ -10,8 +10,8 @@ A CakePHP plugin for user login.  Uses cake's native auth and is very easy to se
 
 ### Download
 
-cd app/plugins/
-git clone git://github.com/adrianedworthy/accounts.git
+	cd app/plugins/
+	git clone git://github.com/adrianedworthy/accounts.git
 
 ### Execute Sql
 
