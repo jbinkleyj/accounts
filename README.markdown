@@ -22,7 +22,7 @@ Execute accounts/config/accounts.sql in MySQL.
 	<?php
 	class AppController extends Controller {
 
-		var $components = array('Session', 'Auth', 'Email', 'Accounts.Accounts' => array('emailFrom' => 'noreply@wishclue.com'));
+		var $components = array('Session', 'Auth', 'Email', 'Accounts.Accounts' => array('emailFrom' => 'noreply@example.com'));
 
 		function beforeFilter() {
 			$this->Accounts->setupAuth();
