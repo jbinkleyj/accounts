@@ -1,0 +1,45 @@
+<?php
+class Login {
+
+	function &getInstance($data = null) {
+		static $instance = array();
+		// Create an instance.
+		if (isset($data)) {
+			$instance[0] =& $data;
+		} else {
+			if (!isset($instance)) {
+				trigger_error(__("Account data must be passed to Login::set().", true), E_USER_WARNING);
+				return false;
+			}
+		}
+		return $instance[0];
+	}
+
+	function set($data) {
+		// Called to instantiate an instance, $data typically would include
+		// the contents of Auth::user().
+		if (empty($data)) {
+			return false;
+		}
+		Login::getInstance($data);
+	}
+
+	function get($path) {
+		$data =& Login::getInstance();
+		$path = str_replace('.', '/', $path);
+		if ($path{0} != '/') {
+			// Must start with a /.
+			$path = sprintf('/%s', $path);
+		}
+		if ($value = Set::extract($path, $data)) {
+			return $value[0];
+		}
+	}
+
+	function exists() {
+		$data =& Login::getInstance();
+		return (BOOL) $data;
+	}
+
+}
+?>
