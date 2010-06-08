@@ -26,3 +26,13 @@
 #login p {
 	padding: 5px;
 }
+#login .text, #login .password, #login .checkbox, #login .submit, #login.loggedOut a {
+	margin-right: 10px;
+}
+.text #LoginEmail, .password #LoginPassword {
+	width: 150px;
+}
+#login.loggedOut a {
+	display: block;
+	padding: 5px;
+}
