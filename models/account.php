@@ -27,6 +27,11 @@ class Account extends AccountsAppModel {
 				'message' => "That email address is already registered.",
 			)
 		),
+		'old_password' => array(
+			'on' => 'update',
+			'rule' => 'oldPassword',
+			'message' => "You must enter your old password correctly."
+		),
 		'new_password' => array(
 			'rule' => array('between', 6, 100),
 			'message'=> "Your password must be between 6 and 100 characters long."
@@ -36,21 +41,6 @@ class Account extends AccountsAppModel {
 			'message' => "You must enter exactly the same password twice."
 		)
 	);
-
-	function beforeSave() {
-		// Hash and prepare new password for saving.
-		$newPassword =& $this->data[$this->name]['new_password'];
-		if (!empty($newPassword)) {
-			$this->data[$this->name]['password'] = Security::hash(Configure::read('Security.salt') . $newPassword);
-		}
-		return true;
-	}
-
-	function match($data, $targetField, $rule) {
-        if (current($data) == $this->data[$this->name][$targetField]) {
-            return true;
-        }
-	}
 
 }
 ?>

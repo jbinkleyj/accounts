@@ -67,5 +67,27 @@ class AccountsController extends AccountsAppController {
 		$this->redirect($this->Auth->logout());
 	}
 
+	function changePassword($id = null) {
+		if (!$id && $this->data['Account']['id']) {
+			$this->Session->setFlash(__("No account specified.", true));
+			$this->redirect('/');
+		}
+		if (!empty($this->data)) {
+			if ($this->Account->save($this->data)) {
+				$this->Session->setFlash(__("Your changes to your account have been saved.", true));
+			} else {
+				$this->Session->setFlash(__("There was a problem saving your changes, please correct the errors below and try again.", true));
+			}
+		} else {
+			$this->Account->id = $id;
+			if (!$this->Account->exists()) {
+				$this->Session->setFlash(__("Account does not exist.", true));
+				$this->redirect('/');
+			}
+			$this->data['Account']['id'] = $id;
+		}
+		$this->set('title_for_layout', __("Edit Account", true));
+	}
+
 }
 ?>
