@@ -1,4 +1,4 @@
-<div id="login">
+<div id="login" class="<?php echo ((Login::exists()) ? 'loggedIn' : 'loggedOut'); ?>">
 
 	<?php if (!Login::exists()): ?>
 
@@ -7,12 +7,10 @@
 		echo $form->input("email");
 		echo $form->input("password");
 		echo $form->input('remember', array('label' => __("Remember me", true),'type' => 'checkbox'));
-		echo $form->submit(__("Submit", true));
-		echo $form->end();
+		echo $form->end(__("Login", true));
 		?>
 
 		<p>
-			Not registered yet?
 			<?php echo $html->link(__("Sign Up", true), array(
 				'plugin' => 'accounts',
 				'controller' => 'accounts',
