@@ -33,10 +33,10 @@ Execute accounts/config/accounts.sql in MySQL.
 
 ### In /app/views/layout/default.ctp
 
-Put this in <head></head>:
+Put this inside the head tag:
 
 	echo $html->css('/accounts/css/login');
 
-Put this just under <h1></h1>:
+Put this just under the header div:
 
-	<?php echo $this->element('login', array('plugin' => 'Accounts')); ?>### Put this in /app/views/layout/default.ctp just under <h1></h1>
+	<?php echo $this->element('login', array('plugin' => 'Accounts')); ?>
