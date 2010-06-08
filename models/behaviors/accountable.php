@@ -24,14 +24,45 @@ class AccountableBehavior extends ModelBehavior {
 
 	}
 
-	function activate(&$model, $id = null) {
-		// Ban $id.  Or unban if $value is false.
-		if (isset($id)) {
-			$model->id = $id;
+	function generateActivationCode(&$model, $id = null) {
+		$account = $model->read(array('email', 'created'), $id);
+		extract($account['Account']);
+		return Security::hash(Configure::read('Security.salt') . $email . $created);
+	}
+
+	function activate(&$model, $email = null, $code = false) {
+		// We need the id and created date to check the code.
+		$account = $model->find('first', array(
+			'fields' => array('id', 'activated', 'banned', 'created'),
+			'conditions' => array($model->name . '.email' => $email),
+			'recursive' => -1
+		));
+		if (empty($account)) {
+			$model->validationErrors['_activate'] = "Specified account does not exist.";
+			return false;
 		}
-		$model->set('activated', true);
-		if (!$model->save()) {
-			trigger_error("Could not activate user.", E_USER_WARNING);
+		extract($account['Account']);
+		// Some extra security.
+		if ($activated) {
+			$model->validationErrors['_activate'] = "Your account has already been activated.";
+			return false;
+		}
+		if ($banned) {
+			$model->validationErrors['_activate'] = "Your account has been banned.";
+			return false;
+		}
+		// If the code matches the hash, activate the user.
+		if ($code == Security::hash(Configure::read('Security.salt') . $email . $created)) {
+			$model->id = $id;
+			$model->set('activated', true);
+			if (!$model->save()) {
+				$model->validationErrors['_activate'] = "Could not activate account.";
+				return false;
+			}
+			return true;
+		} else {
+			$model->validationErrors['_activate'] = "Activation code incorrect.";
+			return false;
 		}
 	}
 

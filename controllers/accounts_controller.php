@@ -49,8 +49,16 @@ class AccountsController extends AccountsAppController {
 		$this->set('title_for_layout', __("Sign Up", true));
 	}
 
-	function activate() {
-
+	function activate($email = null, $code = null) {
+		if (!$email || !$code) {
+			$this->Session->setFlash(__("Email or activation code missing.  Please check that you are visiting the link exactly as it is in your email.", true));
+		}
+		if ($this->Account->activate($email, $code)) {
+			$this->Session->setFlash(__("Account successfully activated.", true));
+//			$this->redirect(??);
+		} else {
+			$this->Session->setFlash(__($this->Account->validationErrors['_activate'], true));
+		}
 	}
 
 	function sendActivationEmail() {
