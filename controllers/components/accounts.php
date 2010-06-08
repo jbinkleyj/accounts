@@ -25,6 +25,7 @@ class AccountsComponent extends Object {
 	var $Auth, $Email;
 
 	function initialize(&$controller, $settings) {
+		App::import('Vendor', 'Accounts.Login');
 		$this->controller =& $controller;
 		// Auth component dependancy.
 		$this->Auth =& $controller->Auth;
@@ -56,7 +57,6 @@ class AccountsComponent extends Object {
 			'action' => 'login'
 		);
 		$this->Auth->allow(array('view', 'display'));
-		App::import('Vendor', 'Accounts.Login');
 		Login::set($this->Auth->user());
 	}
 
