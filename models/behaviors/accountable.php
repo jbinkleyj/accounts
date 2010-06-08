@@ -24,12 +24,31 @@ class AccountableBehavior extends ModelBehavior {
 
 	}
 
-	function activate() {
-
+	function activate(&$model, $id = null) {
+		// Ban $id.  Or unban if $value is false.
+		if (isset($id)) {
+			$model->id = $id;
+		}
+		$model->set('activated', true);
+		if (!$model->save()) {
+			trigger_error("Could not activate user.", E_USER_WARNING);
+		}
 	}
 
-	function ban() {
+	function ban(&$model, $id = null, $value = true) {
+		// Ban $id.  Or unban if $value is false.
+		if (isset($id)) {
+			$model->id = $id;
+		}
+		$model->set('banned', $value);
+		if (!$model->save()) {
+			trigger_error("Could not ban user.", E_USER_WARNING);
+		}
+	}
 
+	function unban(&$model, $id = null) {
+		// Unban $id.
+		$this->ban($model, $id, false);
 	}
 
 	function updateLastLogin(&$model) {
