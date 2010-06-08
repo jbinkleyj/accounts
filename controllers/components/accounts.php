@@ -22,11 +22,14 @@ class AccountsComponent extends Object {
 	);
 
 	var $controller;
+	var $Account;
 	var $Auth, $Email;
 
 	function initialize(&$controller, $settings) {
-		App::import('Vendor', 'Accounts.Login');
 		$this->controller =& $controller;
+		// Load the login singleton, where we can access logged in user info
+		// from anywhere.
+		App::import('Vendor', 'Accounts.Login');
 		// Auth component dependancy.
 		$this->Auth =& $controller->Auth;
 		if (!is_a($this->Auth, 'AuthComponent')) {
@@ -41,11 +44,16 @@ class AccountsComponent extends Object {
 		$this->_settings = Set::merge($this->_settings, $settings);
 		$errors = array();
 		if (!$this->_settings['emailFrom']) {
-			trigger_error("Please set 'emailFrom' for the Accounts.Accounts component.  E.g. \"var \$components = array('Accounts.Accounts' => array('emailFrom' => 'myemail@myhost.com', ... );\".");
+			trigger_error("Please set 'emailFrom' for the Accounts.Accounts component.  E.g. \"var \$components = array('Accounts.Accounts' => array('emailFrom' => 'myemail@myhost.com', ... );\".", E_USER_WARNING);
+		}
+		// Load the Account model so we can save last login time.
+		$this->Account =& $controller->Account;
+		if (!isset($this->Account)) {
+			$controller->loadModel('Account');
 		}
 	}
 
-	function startup() {
+	function startup(&$controller) {
 	}
 
 	function setupAuth() {
@@ -57,7 +65,10 @@ class AccountsComponent extends Object {
 			'action' => 'login'
 		);
 		$this->Auth->allow(array('view', 'display'));
+		// Put the auth info in the Login singleton for easy access.
 		Login::set($this->Auth->user());
+		// Update last login in Account model.
+		$this->Account->updateLastLogin();
 	}
 
 	function sendActivationEmail() {

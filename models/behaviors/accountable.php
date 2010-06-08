@@ -32,6 +32,17 @@ class AccountableBehavior extends ModelBehavior {
 
 	}
 
+	function updateLastLogin(&$model) {
+		// Set last_login to now, if we're logged in.
+		if (Login::exists()) {
+			$model->id = Login::get('Account.id');
+			$model->set('last_login', date('Y-m-d h:i:s'));
+			if (!$model->save()) {
+				trigger_error("Could not update last login time.", E_USER_WARNING);
+			}
+		}
+	}
+
 	function beforeSave(&$model) {
 		// Hash and prepare new password for saving.
 		$newPassword =& $model->data[$model->name]['new_password'];
