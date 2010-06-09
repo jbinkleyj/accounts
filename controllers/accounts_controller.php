@@ -49,6 +49,26 @@ class AccountsController extends AccountsAppController {
 		$this->set('title_for_layout', __("Sign Up", true));
 	}
 
+	function sendActivationEmail($email = null) {
+		if (!$email) {
+			$email = $this->data['Account']['email'];
+		}
+		$this->set('title_for_layout', __("Send Me An Activation Email", true));
+		if ($email) {
+			$code = $this->Account->generateActivationCode($email);
+			if ($code) {
+				if ($this->Accounts->sendActivationEmail($email, $code)) {
+					$this->set('title_for_layout', __("Activation Email Sent", true));
+					$this->render('send_activation_email_success');
+				} else {
+					$this->Session->setFlash(__("Sorry, there was a problem sending you an activation email.", true));
+				}
+			} else {
+				$this->Session->setFlash(__("This email address isn't signed up.  Please check your spelling, or sign up if you haven't already.", true));
+			}
+		}
+	}
+
 	function activate($email = null, $code = null) {
 		if (!$email || !$code) {
 			$this->Session->setFlash(__("Email or activation code missing.  Please check that you are visiting the link exactly as it is in your email.", true));
@@ -59,10 +79,6 @@ class AccountsController extends AccountsAppController {
 		} else {
 			$this->Session->setFlash(__($this->Account->validationErrors['_activate'], true));
 		}
-	}
-
-	function sendActivationEmail() {
-
 	}
 
 	function sendPasswordResetEmail() {

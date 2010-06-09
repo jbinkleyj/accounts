@@ -24,19 +24,22 @@ class AccountableBehavior extends ModelBehavior {
 
 	}
 
-	function generateActivationCode(&$model, $id = null) {
-		$account = $model->read(array('email', 'created'), $id);
+	function generateActivationCode(&$model, $idOrEmail = null) {
+		if (is_numeric($idOrEmail)) {
+			$account = $model->read(array('email', 'created'), $idOrEmail);
+		} else {
+			$account = $model->findByEmail($idOrEmail);
+		}
+		if (!$account) {
+			return false;
+		}
 		extract($account['Account']);
 		return Security::hash(Configure::read('Security.salt') . $email . $created);
 	}
 
 	function activate(&$model, $email = null, $code = false) {
-		// We need the id and created date to check the code.
-		$account = $model->find('first', array(
-			'fields' => array('id', 'activated', 'banned', 'created'),
-			'conditions' => array($model->name . '.email' => $email),
-			'recursive' => -1
-		));
+		// We need the id and created date to check the activation code.
+		$account = $model->findByEmail($email);
 		if (empty($account)) {
 			$model->validationErrors['_activate'] = "Specified account does not exist.";
 			return false;

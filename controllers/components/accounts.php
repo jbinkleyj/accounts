@@ -13,12 +13,14 @@
  */
 class AccountsComponent extends Object {
 
-	var $_settings = array(
+	var $__settings = array(
 		'emailFrom' => null,
 		'emailActivationSubject' => "Please activate your account",
 		'emailSuccessSubject' => "You have successfully signed up!",
 		'emailPasswordResetSubject' => "Resetting your password",
-		'emailDeleteEmail' => "We're sorry to see you go"
+		'emailDeleteEmail' => "We're sorry to see you go",
+		'emailLayout' => 'default',
+		'emailSendAs' => 'text'
 	);
 
 	var $controller;
@@ -41,9 +43,9 @@ class AccountsComponent extends Object {
 			trigger_error("Email component not loaded in controller.  Try putting something like \"var \$components = array('Session', 'Auth', 'Email', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
 		}
 		// Settings.
-		$this->_settings = Set::merge($this->_settings, $settings);
+		$this->__settings = Set::merge($this->__settings, $settings);
 		$errors = array();
-		if (!$this->_settings['emailFrom']) {
+		if (!$this->__settings['emailFrom']) {
 			trigger_error("Please set 'emailFrom' for the Accounts.Accounts component.  E.g. \"var \$components = array('Accounts.Accounts' => array('emailFrom' => 'myemail@myhost.com', ... );\".", E_USER_WARNING);
 		}
 		// Load the Account model so we can save last login time.
@@ -71,8 +73,14 @@ class AccountsComponent extends Object {
 		$this->Account->updateLastLogin();
 	}
 
-	function sendActivationEmail() {
-
+	function sendActivationEmail($email, $code) {
+		$this->__setupEmail($email, __($this->__settings['emailActivationSubject'], true), 'activation');
+		$this->controller->set(compact('email', 'code'));
+		$success = $this->Email->send();
+		if ($this->Email->smtpError) {
+		  trigger_error("SMTP ERROR: " . $this->Email->smtpError, E_USER_WARNING);
+		}
+		return $success;
 	}
 
 	function sendSuccessEmail() {
@@ -87,8 +95,14 @@ class AccountsComponent extends Object {
 
 	}
 
-	function _email($to, $subject, $template) {
-
+	function __setupEmail($to, $subject, $template) {
+		$this->Email->reset();
+		$this->Email->to = $to;
+		$this->Email->from = $this->__settings['emailFrom'];
+		$this->Email->subject = $subject;
+		$this->Email->template = $template;
+		$this->Email->layout = $this->__settings['emailLayout'];
+		$this->Email->sendAs = $this->__settings['emailSendAs'];
 	}
 
 	function storeAction() {
