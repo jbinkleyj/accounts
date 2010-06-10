@@ -24,3 +24,12 @@ echo $form->end();
 		'action' => 'resetPassword'
 	)); ?>
 </p>
+
+<p>
+	<?php echo $html->link(__("Resend activation email", true), array(
+		'plugin' => 'accounts',
+		'controller' => 'accounts',
+		'action' => 'sendActivationEmail',
+		$this->data['Account']['email']
+	)); ?>
+</p>

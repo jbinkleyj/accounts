@@ -40,8 +40,9 @@ class AccountsController extends AccountsAppController {
 		if (!empty($this->data)) {
 			$this->Account->create();
 			if ($this->Account->save($this->data)) {
-				$this->Accounts->sendActivationEmail();
-				$this->redirect(array('action' => 'activate'));
+				// Send activation email.
+				$this->sendActivationEmail($this->data['Account']['email']);
+				return;
 			} else {
 				$this->Session->setFlash(__("Please correct the below errors and try again.", true));
 			}
@@ -52,6 +53,8 @@ class AccountsController extends AccountsAppController {
 	function sendActivationEmail($email = null) {
 		if (!$email) {
 			$email = $this->data['Account']['email'];
+		} else {
+			$this->data['Account']['email'] = $email;
 		}
 		$this->set('title_for_layout', __("Send Me An Activation Email", true));
 		if ($email) {
