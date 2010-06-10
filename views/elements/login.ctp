@@ -3,9 +3,16 @@
 	<?php if (!Login::exists()): ?>
 
 		<?php
-		echo $form->create('Account', array('action' => 'login'));
-		echo $form->input("email", array('id' => 'LoginEmail'));
-		echo $form->input("password", array('id' => 'LoginPassword'));
+		echo $form->create('Account', array(
+			'action' => 'login',
+			'url' => array(
+				'plugin' => 'accounts',
+				'controller' => 'accounts',
+				'action' => 'login'
+			)
+		));
+		echo $form->input('email', array('id' => 'LoginEmail'));
+		echo $form->input('password', array('id' => 'LoginPassword'));
 		echo $form->input('remember', array('id' => 'LoginRemember', 'label' => __("Remember me", true), 'type' => 'checkbox'));
 		echo $form->end(__("Login", true));
 		?>
