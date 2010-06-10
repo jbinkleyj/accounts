@@ -78,7 +78,7 @@ class AccountsController extends AccountsAppController {
 		}
 		if ($this->Account->activate($email, $code)) {
 			$this->Session->setFlash(__("Account successfully activated.", true));
-//			$this->redirect(??);
+			$this->redirect($this->Accounts->settings['redirectAfterActivation']);
 		} else {
 			$this->Session->setFlash(__($this->Account->validationErrors['_activate'], true));
 		}
