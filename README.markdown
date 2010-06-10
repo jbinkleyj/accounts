@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Version: 0.1 (not ready to use yet)
+Version: 0.2 (not ready to use yet)
 
 A CakePHP plugin for user login.  Uses cake's native auth and is very easy to setup.
 
@@ -40,3 +40,29 @@ Put this inside the head tag:
 Put this just under the header div:
 
 	<?php echo $this->element('login', array('plugin' => 'Accounts')); ?>
+
+## Troubleshooting
+
+### Emails not sending?
+
+Try connecting to an SMTP server to send mail.  Put this in /app/app-controller.php and fill in your settings.
+
+    $this->Email->smtpOptions = array(
+		'host' => 'yoursmtpservershostname',
+		'username' => 'yourusername',
+		'password' => 'yourpassword',
+        'port' => '25',
+        'timeout' => '30',
+        'client' => 'smtp_helo_hostname'
+    );
+	$this->Email->delivery = 'smtp';
+
+## Todo
+
+* Reset password
+* Delete account
+* Remember me
+* Changeable login field
+* Changeable model
+* Preserve any form submissions that prompted login
+* Ajax login
