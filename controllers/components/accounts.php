@@ -52,7 +52,7 @@ class AccountsComponent extends Object {
 		// Load the Account model so we can save last login time.
 		$this->Account =& $controller->Account;
 		if (!isset($this->Account)) {
-			$controller->loadModel('Account');
+			$controller->loadModel('Accounts.Account');
 		}
 	}
 
