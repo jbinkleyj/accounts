@@ -59,7 +59,6 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 
 ## Todo
 
-* Reset password
 * Delete account
 * Remember me
 * Changeable login field
