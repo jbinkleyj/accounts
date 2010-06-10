@@ -75,6 +75,7 @@ class AccountsController extends AccountsAppController {
 	function activate($email = null, $code = null) {
 		if (!$email || !$code) {
 			$this->Session->setFlash(__("Email or activation code missing.  Please check that you are visiting the link exactly as it is in your email.", true));
+			$this->redirect('/');
 		}
 		if ($this->Account->activate($email, $code)) {
 			$this->Session->setFlash(__("Account successfully activated.", true));
@@ -84,8 +85,47 @@ class AccountsController extends AccountsAppController {
 		}
 	}
 
-	function sendPasswordResetEmail() {
+	function sendResetPasswordEmail($email = null) {
+		if (!$email) {
+			$email = $this->data['Account']['email'];
+		} else {
+			$this->data['Account']['email'] = $email;
+		}
+		if ($email) {
+			$this->set('title_for_layout', __("Reset Password", true));
+			$code = $this->Account->generateResetPasswordCode($email);
+			if ($code) {
+				if ($this->Accounts->sendResetPasswordEmail($email, $code)) {
+					$this->Session->setFlash(__("Reset password email sent.", true));
+					$this->render('send_reset_password_email_success');
+				} else {
+					$this->Session->setFlash(__("Sorry, there was a problem sending you a reset password email.", true));
+				}
+			} else {
+				$this->Session->setFlash(__("This email address isn't signed up.  Please check your spelling, or sign up if you haven't already.", true));
+			}
+		}
+	}
 
+	function resetPassword($email = null, $code = null) {
+		if (!$email || !$code) {
+			$this->Session->setFlash(__("Email or reset password code missing.  Please check that you are visiting the link exactly as it is in your email.", true));
+			$this->redirect('/');
+		}
+		if ($code == $this->Account->generateResetPasswordCode($email)) {
+			if (!empty($this->data)) {
+				if ($this->Account->updateByEmail($email, $this->data)) {
+					$this->Session->setFlash(__("Password changed.", true));
+					$this->redirect('/');
+				} else {
+					$this->Session->setFlash(__("There were problems changing your password.  Please correct the errors below and try again.", true));
+				}
+			}
+		} else {
+			$this->Session->setFlash(__("Email or reset password code incorrect.  Please check that you are visiting the link exactly as it is in your email.", true));
+		}
+		$this->set('title_for_layout', __("Reset Password", true));
+		$this->set(compact('email', 'code'));
 	}
 
 	function login() {}
@@ -101,9 +141,9 @@ class AccountsController extends AccountsAppController {
 		}
 		if (!empty($this->data)) {
 			if ($this->Account->save($this->data)) {
-				$this->Session->setFlash(__("Your changes to your account have been saved.", true));
+				$this->Session->setFlash(__("Password changed.", true));
 			} else {
-				$this->Session->setFlash(__("There was a problem saving your changes, please correct the errors below and try again.", true));
+				$this->Session->setFlash(__("There were problems changing your password.", true));
 			}
 		} else {
 			$this->Account->id = $id;

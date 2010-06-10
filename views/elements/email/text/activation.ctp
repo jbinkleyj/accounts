@@ -1,4 +1,5 @@
-Before you may login, please activate your account by clicking on the link provided:
+<?php __("Before you may login, please activate your account by clicking on the link provided:", true); ?>
+
 
 <?php echo $html->url(array(
 	'plugin' => 'accounts',

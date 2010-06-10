@@ -21,7 +21,7 @@ echo $form->end();
 	<?php echo $html->link(__("Forgot your password?", true), array(
 		'plugin' => 'accounts',
 		'controller' => 'accounts',
-		'action' => 'resetPassword'
+		'action' => 'sendResetPasswordEmail'
 	)); ?>
 </p>
 

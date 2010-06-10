@@ -13,15 +13,10 @@
  */
 class AccountableBehavior extends ModelBehavior {
 
-	var $_settings = array(
-
-	);
-
-	function setup(&$model, $settings) {
-	}
-
-	function resetPassword() {
-
+	function updateByEmail(&$model, $email, $data) {
+		$id = $model->field('id', array($model->name . '.email' => $email));
+		$data[$model->name]['id'] = $id;
+		return $model->save($data);
 	}
 
 	function generateActivationCode(&$model, $idOrEmail = null) {
@@ -67,6 +62,15 @@ class AccountableBehavior extends ModelBehavior {
 			$model->validationErrors['_activate'] = "Activation code incorrect.";
 			return false;
 		}
+	}
+
+	function generateResetPasswordCode(&$model, $email) {
+		$account = $model->findByEmail($email);
+		if (!$account) {
+			return false;
+		}
+		extract($account['Account']);
+		return Security::hash(Configure::read('Security.salt') . $email . $password);
 	}
 
 	function ban(&$model, $id = null, $value = true) {

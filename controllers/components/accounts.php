@@ -16,6 +16,7 @@ class AccountsComponent extends Object {
 	var $settings = array(
 		'emailFrom' => null,
 		'emailActivationSubject' => "Please activate your account",
+		'emailResetPasswordSubject' => "You have requested that your password be reset",
 		'emailSuccessSubject' => "You have successfully signed up!",
 		'emailPasswordResetSubject' => "Resetting your password",
 		'emailDeleteEmail' => "We're sorry to see you go",
@@ -78,19 +79,19 @@ class AccountsComponent extends Object {
 	function sendActivationEmail($email, $code) {
 		$this->__setupEmail($email, __($this->settings['emailActivationSubject'], true), 'activation');
 		$this->controller->set(compact('email', 'code'));
-		$success = $this->Email->send();
-		if ($this->Email->smtpError) {
-		  trigger_error("SMTP ERROR: " . $this->Email->smtpError, E_USER_WARNING);
-		}
-		return $success;
+		$this->Email->send();
+		return !$this->__emailError();
 	}
 
 	function sendSuccessEmail() {
 
 	}
 
-	function sendResetPasswordEmail() {
-
+	function sendResetPasswordEmail($email, $code) {
+		$this->__setupEmail($email, __($this->settings['emailResetPasswordSubject'], true), 'reset_password');
+		$this->controller->set(compact('email', 'code'));
+		$this->Email->send();
+		return !$this->__emailError();
 	}
 
 	function sendDeleteEmail() {
@@ -105,6 +106,13 @@ class AccountsComponent extends Object {
 		$this->Email->template = $template;
 		$this->Email->layout = $this->settings['emailLayout'];
 		$this->Email->sendAs = $this->settings['emailSendAs'];
+	}
+
+	function __emailError() {
+		if ($this->Email->smtpError) {
+			trigger_error("SMTP ERROR: " . $this->Email->smtpError, E_USER_WARNING);
+			return $this->Email->smtpError;
+		}
 	}
 
 	function storeAction() {
