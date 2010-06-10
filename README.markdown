@@ -45,7 +45,7 @@ Put this just under the header div:
 
 ### Emails not sending?
 
-Try connecting to an SMTP server to send mail.  Put this in /app/app-controller.php and fill in your settings.
+Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /app/app-controller.php and fill in your settings.
 
     $this->Email->smtpOptions = array(
 		'host' => 'yoursmtpservershostname',
