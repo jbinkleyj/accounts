@@ -63,7 +63,8 @@ class AccountsComponent extends Object {
 	function setupAuth() {
 		$this->Auth->userModel = 'Account';
 		$this->Auth->fields = array('username' => 'email', 'password' => 'password');
-		$this->Auth->loginError = __("Login failed.  Invalid email or password.", true);
+		$this->Auth->userScope = array('activated' => true, 'banned' => false);
+		$this->Auth->loginError = __("Login failed.  Invalid email or password.  Please make sure you have activated your account.", true);
 		$this->Auth->loginAction = array(
 			'plugin' => 'accounts',
 			'controller' => 'accounts',
