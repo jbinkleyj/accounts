@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Version: 0.2 (not ready to use yet)
+Version: 0.5 (usable, but needs testing)
 
 A CakePHP plugin for user login.  Uses cake's native auth and is very easy to setup.
 
