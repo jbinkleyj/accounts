@@ -77,6 +77,17 @@ class AccountsComponent extends Object {
 		$this->Account->updateLastLogin();
 	}
 
+	function manualLogin($account) {
+		if (isset($account['Account']['password'])) {
+			unset($account['Account']['password']);
+		}
+		$this->controller->Session->write('Auth', $account);
+		// Put the auth info in the Login singleton for easy access.
+		Login::set($this->Auth->user());
+		// Update last login in Account model.
+		$this->Account->updateLastLogin();
+	}
+
 	function sendActivationEmail($email, $code) {
 		$this->__setupEmail($email, __($this->settings['emailActivationSubject'], true), 'activation');
 		$this->controller->set(compact('email', 'code'));
