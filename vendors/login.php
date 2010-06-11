@@ -48,6 +48,15 @@ class Login {
 		}
 	}
 
+	function justLoggedIn($value = null) {
+		$data =& Login::getInstance();
+		if ($value) {
+			return $data['justLoggedIn'] = true;
+		} else {
+			return $data['justLoggedIn'];
+		}
+	}
+
 	function exists() {
 		$data =& Login::getInstance();
 		return (BOOL) $data;

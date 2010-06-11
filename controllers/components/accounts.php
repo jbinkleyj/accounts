@@ -27,7 +27,7 @@ class AccountsComponent extends Object {
 
 	var $controller;
 	var $Account;
-	var $Auth, $Email;
+	var $Auth, $Email, $Session, $Cookie;
 
 	function initialize(&$controller, $settings) {
 		$this->controller =& $controller;
@@ -37,12 +37,22 @@ class AccountsComponent extends Object {
 		// Auth component dependancy.
 		$this->Auth =& $controller->Auth;
 		if (!is_a($this->Auth, 'AuthComponent')) {
-			trigger_error("Auth component not loaded in controller.  Try putting something like \"var \$components = array('Session', 'Auth', 'Email', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
+			trigger_error("Auth component not loaded in controller.  Try putting something like \"var \$components = array('Auth', 'Email', 'Session', 'Cookie', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
 		}
 		// Email component dependancy.
 		$this->Email =& $controller->Email;
 		if (!is_a($this->Email, 'EmailComponent')) {
-			trigger_error("Email component not loaded in controller.  Try putting something like \"var \$components = array('Session', 'Auth', 'Email', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
+			trigger_error("Email component not loaded in controller.  Try putting something like \"var \$components = array('Auth', 'Email', 'Session', 'Cookie', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
+		}
+		// Session component dependancy.
+		$this->Session =& $controller->Session;
+		if (!is_a($this->Session, 'SessionComponent')) {
+			trigger_error("Session component not loaded in controller.  Try putting something like \"var \$components = array('Auth', 'Email', 'Session', 'Cookie', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
+		}
+		// Cookie component dependancy.
+		$this->Cookie =& $controller->Cookie;
+		if (!is_a($this->Cookie, 'CookieComponent')) {
+			trigger_error("Cookie component not loaded in controller.  Try putting something like \"var \$components = array('Auth', 'Email', 'Session', 'Cookie', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
 		}
 		// Settings.
 		$this->settings = Set::merge($this->settings, $settings);
@@ -70,14 +80,34 @@ class AccountsComponent extends Object {
 			'controller' => 'accounts',
 			'action' => 'login'
 		);
-		$this->Auth->allow(array('view', 'display'));
+		$this->Auth->autoRedirect = false;
+		$this->Auth->allow(array('view', 'display', 'logout'));
 		// Put the auth info in the Login singleton for easy access.
 		Login::set($this->Auth->user());
 		// Update last login in Account model.
 		$this->Account->updateLastLogin();
+		// Manually login user if they have ticked remember me.
+		$this->rememberMe();
+	}
+
+	function rememberMe() {
+		if (Login::exists()) {
+			// Remember the user.
+			if (!empty($this->controller->data['Account']['remember_me'])) {
+				$this->Cookie->write('rememberMe', Login::get('Account.id'), true, '30 days');
+			}
+		} else {
+			// Already remembered?  Login.
+			$id = $this->Cookie->read('rememberMe');
+			if ($id) {
+				$account = $this->Account->findById($id);
+				$this->manualLogin($account);
+			}
+		}
 	}
 
 	function manualLogin($account) {
+		// Login using an Account row instead of username and password.
 		if (isset($account['Account']['password'])) {
 			unset($account['Account']['password']);
 		}

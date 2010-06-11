@@ -1,9 +1,9 @@
 <?php
 echo $session->flash('auth');
 echo $form->create('Account', array('action' => 'login'));
-echo $form->input("email");
-echo $form->input("password");
-echo $form->input('remember', array('label' => __("Remember me", true),'type' => 'checkbox'));
+echo $form->input('email');
+echo $form->input('password');
+echo $form->input('remember_me', array('type' => 'checkbox'));
 echo $form->submit(__("Submit", true));
 echo $form->end();
 ?>

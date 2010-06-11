@@ -130,9 +130,17 @@ class AccountsController extends AccountsAppController {
 		$this->set(compact('email', 'code'));
 	}
 
-	function login() {}
+	function login() {
+		Login::set($this->Auth->user());
+		if (Login::exists() && !empty($this->data)) {
+			Login::justLoggedIn(true);
+			$this->Accounts->rememberMe();
+			$this->redirect('/');
+		}
+	}
 
 	function logout() {
+		$this->Cookie->destroy('rememberMe');
 		$this->redirect($this->Auth->logout());
 	}
 

@@ -61,7 +61,7 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 
 * Delete account
 * Success and delete emails
-* Remember me
+* Configurable redirects
 * Changeable login field
 * Changeable model
 * Preserve any form submissions that prompted login

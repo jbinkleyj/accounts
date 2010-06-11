@@ -13,7 +13,7 @@
 		));
 		echo $form->input('email', array('id' => 'LoginEmail'));
 		echo $form->input('password', array('id' => 'LoginPassword'));
-		echo $form->input('remember', array('id' => 'LoginRemember', 'label' => __("Remember me", true), 'type' => 'checkbox'));
+		echo $form->input('remember_me', array('id' => 'LoginRemember', 'type' => 'checkbox'));
 		echo $form->end(__("Login", true));
 		?>
 
