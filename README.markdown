@@ -60,6 +60,7 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 ## Todo
 
 * Delete account
+* Success and delete emails
 * Remember me
 * Changeable login field
 * Changeable model
