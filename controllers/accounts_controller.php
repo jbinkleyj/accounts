@@ -14,12 +14,13 @@
 class AccountsController extends AccountsAppController {
 
 	var $name = 'Accounts';
+	var $modelName;
 
 	var $helpers = array('Html', 'Form', 'Paginator');
 
 	var $paginate = array(
 		'limit' => 10,
-		'order' => array('Account.email' => 'asc')
+		'order' => array('email' => 'asc')
 	);
 
 	function beforeFilter() {
@@ -27,11 +28,12 @@ class AccountsController extends AccountsAppController {
 			trigger_error("Accounts.Accounts component not loaded in controller.  Try putting something like \"var \$components = array('Session', 'Auth', 'Email', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
 		}
 		parent::beforeFilter();
-		$this->Auth->allow('signUp', 'resetPassword', 'activate', 'sendActivationEmail', 'sendResetPasswordEmail');
+		$this->Auth->allow('signUp', 'resetPassword', 'activate', 'sendActivationEmail', 'sendResetPasswordEmail', 'login', 'logout');
+		$this->modelName = $this->Accounts->settings['modelName'];
 	}
 
 	function index() {
-		$accounts = $this->paginate('Account');
+		$accounts = $this->paginate($this->modelName);
 		$this->set(compact('accounts'));
 		$this->set('title_for_layout', __("Manage Accounts", true));
 	}
@@ -41,7 +43,7 @@ class AccountsController extends AccountsAppController {
 			$this->Account->create();
 			if ($this->Account->save($this->data)) {
 				// Send activation email.
-				$this->sendActivationEmail($this->data['Account']['email']);
+				$this->sendActivationEmail($this->data[$this->modelName]['email']);
 				return;
 			} else {
 				$this->Session->setFlash(__("Please correct the below errors and try again.", true));
@@ -52,9 +54,11 @@ class AccountsController extends AccountsAppController {
 
 	function sendActivationEmail($email = null) {
 		if (!$email) {
-			$email = $this->data['Account']['email'];
+			// Get email from the form instead.
+			$email = $this->data[$this->modelName]['email'];
 		} else {
-			$this->data['Account']['email'] = $email;
+			// Fill in the email field in case there are errors to be corrected.
+			$this->data[$this->modelName]['email'] = $email;
 		}
 		$this->set('title_for_layout', __("Send Me An Activation Email", true));
 		if ($email) {
@@ -89,9 +93,9 @@ class AccountsController extends AccountsAppController {
 
 	function sendResetPasswordEmail($email = null) {
 		if (!$email) {
-			$email = $this->data['Account']['email'];
+			$email = $this->data[$this->modelName]['email'];
 		} else {
-			$this->data['Account']['email'] = $email;
+			$this->data[$this->modelName]['email'] = $email;
 		}
 		if ($email) {
 			$this->set('title_for_layout', __("Reset Password", true));
@@ -145,7 +149,7 @@ class AccountsController extends AccountsAppController {
 	}
 
 	function changePassword($id = null) {
-		if (!$id && $this->data['Account']['id']) {
+		if (!$id && $this->data[$this->modelName]['id']) {
 			$this->Session->setFlash(__("No account specified.", true));
 			$this->redirect('/');
 		}
@@ -161,7 +165,7 @@ class AccountsController extends AccountsAppController {
 				$this->Session->setFlash(__("Account does not exist.", true));
 				$this->redirect('/');
 			}
-			$this->data['Account']['id'] = $id;
+			$this->data[$this->modelName]['id'] = $id;
 		}
 		$this->set('title_for_layout', __("Edit Account", true));
 	}

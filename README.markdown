@@ -6,6 +6,14 @@ Version: 0.5 (usable, but needs testing)
 
 A CakePHP plugin for user login.  Uses cake's native auth and is very easy to setup.
 
+### Testing
+
+Please help me test and improve the Accounts plugin!
+
+### Why name the model 'Account'?
+
+By default the plugin is designed to separate all the login functionality from any other user related data and logic.
+
 ## Installation
 
 ### Download
@@ -22,7 +30,10 @@ Execute accounts/config/accounts.sql in MySQL.
 	<?php
 	class AppController extends Controller {
 
-		var $components = array('Auth', 'Email', 'Session', 'Cookie', 'Accounts.Accounts' => array('emailFrom' => 'noreply@example.com'));
+		var $components = array(
+			'Auth', 'Email', 'Session', 'Cookie',
+			'Accounts.Accounts' => array('emailFrom' => 'noreply@example.com')
+		);
 
 		function beforeFilter() {
 			$this->Accounts->setupAuth();

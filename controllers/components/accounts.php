@@ -14,6 +14,7 @@
 class AccountsComponent extends Object {
 
 	var $settings = array(
+		'model' => 'Accounts.Account',
 		'emailFrom' => null,
 		'emailActivationSubject' => "Please activate your account",
 		'emailResetPasswordSubject' => "You have requested that your password be reset",
@@ -60,18 +61,17 @@ class AccountsComponent extends Object {
 		if (!$this->settings['emailFrom']) {
 			trigger_error("Please set 'emailFrom' for the Accounts.Accounts component.  E.g. \"var \$components = array('Accounts.Accounts' => array('emailFrom' => 'myemail@myhost.com', ... );\".", E_USER_WARNING);
 		}
+		$modelParts = explode('.', $this->settings['model']);
+		$this->settings['modelName'] = $modelParts[count($modelParts)-1];
 		// Load the Account model so we can save last login time.
-		$this->Account =& $controller->Account;
+		$this->Account =& $controller->{$this->settings['modelName']};
 		if (!isset($this->Account)) {
-			$controller->loadModel('Accounts.Account');
+			$controller->loadModel($this->settings['model']);
 		}
 	}
 
-	function startup(&$controller) {
-	}
-
 	function setupAuth() {
-		$this->Auth->userModel = 'Account';
+		$this->Auth->userModel = $this->settings['modelName'];
 		$this->Auth->fields = array('username' => 'email', 'password' => 'password');
 		$this->Auth->userScope = array('activated' => true, 'banned' => false);
 		$this->Auth->loginError = __("Login failed.  Invalid email or password.  Please make sure you have activated your account.", true);
@@ -81,7 +81,7 @@ class AccountsComponent extends Object {
 			'action' => 'login'
 		);
 		$this->Auth->autoRedirect = false;
-		$this->Auth->allow(array('view', 'display', 'logout'));
+		$this->Auth->allow(array('view', 'display'));
 		// Put the auth info in the Login singleton for easy access.
 		Login::set($this->Auth->user());
 		// Update last login in Account model.
@@ -93,8 +93,8 @@ class AccountsComponent extends Object {
 	function rememberMe() {
 		if (Login::exists()) {
 			// Remember the user.
-			if (!empty($this->controller->data['Account']['remember_me'])) {
-				$this->Cookie->write('rememberMe', Login::get('Account.id'), true, '30 days');
+			if (!empty($this->controller->data[$this->settings['modelName']]['remember_me'])) {
+				$this->Cookie->write('rememberMe', Login::get($this->settings['modelName'] . '.id'), true, '30 days');
 			}
 		} else {
 			// Already remembered?  Login.
@@ -108,8 +108,8 @@ class AccountsComponent extends Object {
 
 	function manualLogin($account) {
 		// Login using an Account row instead of username and password.
-		if (isset($account['Account']['password'])) {
-			unset($account['Account']['password']);
+		if (isset($account[$this->settings['modelName']]['password'])) {
+			unset($account[$this->settings['modelName']]['password']);
 		}
 		$this->controller->Session->write('Auth', $account);
 		// Put the auth info in the Login singleton for easy access.
