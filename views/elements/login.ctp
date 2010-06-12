@@ -36,7 +36,8 @@
 			<?php echo $html->link(__("Account Settings", true), array(
 				'plugin' => 'accounts',
 				'controller' => 'accounts',
-				'action' => 'changePassword'
+				'action' => 'changePassword',
+				Login::get('Account.id')
 			)); ?>
 			<?php echo $html->link(__("Logout", true), array(
 				'plugin' => 'accounts',
