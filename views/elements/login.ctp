@@ -33,6 +33,11 @@
 
 		<p>
 			<?php echo __("Logged in as ", true) . Login::get('Account.email'); ?>.
+			<?php echo $html->link(__("Account Settings", true), array(
+				'plugin' => 'accounts',
+				'controller' => 'accounts',
+				'action' => 'changePassword'
+			)); ?>
 			<?php echo $html->link(__("Logout", true), array(
 				'plugin' => 'accounts',
 				'controller' => 'accounts',
