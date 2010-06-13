@@ -80,6 +80,5 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 * Move login singleton out of vendors
 * Changeable login field
 * Changeable model (test)
-* Do controller names like change_password instead of changePassword
 * Preserve any form submissions that prompted login
 * Ajax login
