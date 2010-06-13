@@ -13,7 +13,7 @@ echo $form->end();
 	<?php echo $html->link(__("Sign Up", true), array(
 		'plugin' => 'accounts',
 		'controller' => 'accounts',
-		'action' => 'signUp'
+		'action' => 'sign_up'
 	)); ?>
 </p>
 
@@ -21,7 +21,7 @@ echo $form->end();
 	<?php echo $html->link(__("Forgot your password?", true), array(
 		'plugin' => 'accounts',
 		'controller' => 'accounts',
-		'action' => 'sendResetPasswordEmail'
+		'action' => 'send_reset_password_email'
 	)); ?>
 </p>
 
@@ -29,7 +29,7 @@ echo $form->end();
 	<?php echo $html->link(__("Resend activation email", true), array(
 		'plugin' => 'accounts',
 		'controller' => 'accounts',
-		'action' => 'sendActivationEmail',
+		'action' => 'send_activation_email',
 		$this->data['Account']['email']
 	)); ?>
 </p>

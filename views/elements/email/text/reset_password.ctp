@@ -4,7 +4,7 @@
 <?php echo $html->url(array(
 	'plugin' => 'accounts',
 	'controller' => 'accounts',
-	'action' => 'resetPassword',
+	'action' => 'reset_password',
 	$email,
 	$code
 ), true); ?>

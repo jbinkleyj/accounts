@@ -28,7 +28,7 @@ class AccountsController extends AccountsAppController {
 			trigger_error("Accounts.Accounts component not loaded in controller.  Try putting something like \"var \$components = array('Session', 'Auth', 'Email', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
 		}
 		parent::beforeFilter();
-		$this->Auth->allow('signUp', 'resetPassword', 'activate', 'sendActivationEmail', 'sendResetPasswordEmail', 'login', 'logout');
+		$this->Auth->allow('sign_up', 'reset_password', 'activate', 'send_activation_email', 'send_reset_password_email', 'login', 'logout');
 		$this->modelName = $this->Accounts->settings['modelName'];
 	}
 
@@ -38,12 +38,12 @@ class AccountsController extends AccountsAppController {
 		$this->set('title_for_layout', __("Manage Accounts", true));
 	}
 
-	function signUp() {
+	function sign_up() {
 		if (!empty($this->data)) {
 			$this->Account->create();
 			if ($this->Account->save($this->data)) {
 				// Send activation email.
-				$this->sendActivationEmail($this->data[$this->modelName]['email']);
+				$this->send_activation_email($this->data[$this->modelName]['email']);
 				return;
 			} else {
 				$this->Session->setFlash(__("Please correct the below errors and try again.", true));
@@ -52,7 +52,7 @@ class AccountsController extends AccountsAppController {
 		$this->set('title_for_layout', __("Sign Up", true));
 	}
 
-	function sendActivationEmail($email = null) {
+	function send_activation_email($email = null) {
 		if (!$email) {
 			// Get email from the form instead.
 			$email = $this->data[$this->modelName]['email'];
@@ -91,7 +91,7 @@ class AccountsController extends AccountsAppController {
 		}
 	}
 
-	function sendResetPasswordEmail($email = null) {
+	function send_reset_password_email($email = null) {
 		if (!$email) {
 			$email = $this->data[$this->modelName]['email'];
 		} else {
@@ -113,7 +113,7 @@ class AccountsController extends AccountsAppController {
 		}
 	}
 
-	function resetPassword($email = null, $code = null) {
+	function reset_password($email = null, $code = null) {
 		if (!$email || !$code) {
 			$this->Session->setFlash(__("Email or reset password code missing.  Please check that you are visiting the link exactly as it is in your email.", true));
 			$this->redirect('/');
@@ -148,7 +148,7 @@ class AccountsController extends AccountsAppController {
 		$this->redirect($this->Auth->logout());
 	}
 
-	function changePassword($id = null) {
+	function change_password($id = null) {
 		if (!$id && $this->data[$this->modelName]['id']) {
 			$this->Session->setFlash(__("No account specified.", true));
 			$this->redirect('/');

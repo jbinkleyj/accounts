@@ -20,13 +20,13 @@
 		<?php echo $html->link(__("Sign Up", true), array(
 			'plugin' => 'accounts',
 			'controller' => 'accounts',
-			'action' => 'signUp'
+			'action' => 'sign_up'
 		)); ?>
 
 		<?php echo $html->link(__("Forgot your password?", true), array(
 			'plugin' => 'accounts',
 			'controller' => 'accounts',
-			'action' => 'sendResetPasswordEmail'
+			'action' => 'send_reset_password_email'
 		)); ?>
 
 	<?php else: ?>
@@ -36,7 +36,7 @@
 			<?php echo $html->link(__("Account Settings", true), array(
 				'plugin' => 'accounts',
 				'controller' => 'accounts',
-				'action' => 'changePassword',
+				'action' => 'change_password',
 				Login::get('Account.id')
 			)); ?>
 			<?php echo $html->link(__("Logout", true), array(
