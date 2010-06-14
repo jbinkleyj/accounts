@@ -46,7 +46,7 @@ Execute accounts/config/accounts.sql in MySQL.
 
 Put this inside the head tag:
 
-	echo $html->css('/accounts/css/login');
+	echo $html->css('/accounts/css/accounts');
 
 Put this just under the header div:
 
@@ -74,7 +74,6 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 * Success and delete emails
 * Configurable redirects
 * Configurable activated, banned etc. fields
-* Rename login.css
 * Views like baked views
 * Allow user to change email
 * Move login singleton out of vendors
