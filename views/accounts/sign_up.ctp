@@ -1,3 +1,4 @@
+<div class="sign_up form">
 <?php
 echo $form->create();
 echo $form->inputs(array(
@@ -8,3 +9,4 @@ echo $form->inputs(array(
 ));
 echo $form->end(__("Sign Up", true));
 ?>
+</div>

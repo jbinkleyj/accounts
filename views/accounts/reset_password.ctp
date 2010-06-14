@@ -1,3 +1,4 @@
+<div class="reset_password form">
 <?php
 echo $form->create('Account', array('url' => array(
 	$email,
@@ -10,3 +11,4 @@ echo $form->inputs(array(
 ));
 echo $form->end(__("Save Password", true));
 ?>
+</div>

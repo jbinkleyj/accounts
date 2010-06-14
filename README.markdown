@@ -74,7 +74,6 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 * Success and delete emails
 * Configurable redirects
 * Configurable activated, banned etc. fields
-* Views like baked views
 * Allow user to change email
 * Move login singleton out of vendors
 * Changeable login field

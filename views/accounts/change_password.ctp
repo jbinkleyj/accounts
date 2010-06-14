@@ -1,3 +1,4 @@
+<div class="change_password form">
 <?php
 echo $form->create();
 echo $form->inputs(array(
@@ -9,3 +10,4 @@ echo $form->inputs(array(
 ));
 echo $form->end(__("Change Password", true));
 ?>
+</div>
