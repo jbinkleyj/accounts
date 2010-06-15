@@ -15,6 +15,7 @@ class AccountsComponent extends Object {
 
 	var $settings = array(
 		'model' => 'Accounts.Account',
+
 		'emailFrom' => null,
 		'emailActivationSubject' => "Please activate your account",
 		'emailResetPasswordSubject' => "You have requested that your password be reset",
@@ -23,7 +24,11 @@ class AccountsComponent extends Object {
 		'emailDeleteEmail' => "We're sorry to see you go",
 		'emailLayout' => 'default',
 		'emailSendAs' => 'text',
-		'redirectAfterActivation' => '/'
+
+		'redirectAfterActivation' => '/',
+		'redirectAfterResetPassword' => '/',
+		'redirectAfterLogin' => '/',
+		'redirectAfterLogout' => '/'
 	);
 
 	var $controller;
@@ -80,6 +85,8 @@ class AccountsComponent extends Object {
 			'controller' => 'accounts',
 			'action' => 'login'
 		);
+		$this->Auth->loginRedirect = $this->settings['redirectAfterLogin'];
+		$this->Auth->logoutRedirect = $this->settings['redirectAfterLogout'];
 		$this->Auth->autoRedirect = false;
 		$this->Auth->allow(array('view', 'display'));
 		// Put the auth info in the Login singleton for easy access.

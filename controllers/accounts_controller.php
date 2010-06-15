@@ -122,7 +122,7 @@ class AccountsController extends AccountsAppController {
 			if (!empty($this->data)) {
 				if ($this->Account->updateByEmail($email, $this->data)) {
 					$this->Session->setFlash(__("Password changed.", true));
-					$this->redirect('/');
+					$this->redirect($this->Accounts->settings['redirectAfterResetPassword']);
 				} else {
 					$this->Session->setFlash(__("There were problems changing your password.  Please correct the errors below and try again.", true));
 				}
@@ -139,7 +139,7 @@ class AccountsController extends AccountsAppController {
 		if (Login::exists() && !empty($this->data)) {
 			Login::justLoggedIn(true);
 			$this->Accounts->rememberMe();
-			$this->redirect('/');
+			$this->redirect($this->Auth->loginRedirect);
 		}
 	}
 
