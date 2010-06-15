@@ -72,9 +72,7 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 
 * Delete account
 * Success and delete emails
-* Configurable redirects
 * Configurable activated, banned etc. fields
-* Allow user to change email
 * Move login singleton out of vendors
 * Changeable login field
 * Changeable model (test)

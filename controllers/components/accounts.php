@@ -28,7 +28,8 @@ class AccountsComponent extends Object {
 		'redirectAfterActivation' => '/',
 		'redirectAfterResetPassword' => '/',
 		'redirectAfterLogin' => '/',
-		'redirectAfterLogout' => '/'
+		'redirectAfterLogout' => '/',
+		'redirectAfterEdit' => '/'
 	);
 
 	var $controller;

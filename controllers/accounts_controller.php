@@ -148,24 +148,31 @@ class AccountsController extends AccountsAppController {
 		$this->redirect($this->Auth->logout());
 	}
 
-	function change_password($id = null) {
+	function edit($id = null) {
 		if (!$id && $this->data[$this->modelName]['id']) {
 			$this->Session->setFlash(__("No account specified.", true));
 			$this->redirect('/');
 		}
+		$this->Account->id = $id;
+		if (!$this->Account->exists()) {
+			$this->Session->setFlash(__("Account does not exist.", true));
+			$this->redirect('/');
+		}
 		if (!empty($this->data)) {
+			if (empty($this->data[$this->modelName]['new_password'])) {
+				unset($this->data[$this->modelName]['old_password']);
+				unset($this->data[$this->modelName]['new_password']);
+				unset($this->data[$this->modelName]['confirm_password']);
+			}
 			if ($this->Account->save($this->data)) {
-				$this->Session->setFlash(__("Password changed.", true));
+				$this->Session->setFlash(__("Changes saved.", true));
+				$this->redirect($this->Accounts->settings['redirectAfterEdit']);
 			} else {
-				$this->Session->setFlash(__("There were problems changing your password.", true));
+				$this->Session->setFlash(__("There were problems saving your changes.  Please correct the errors below and try again.", true));
 			}
 		} else {
-			$this->Account->id = $id;
-			if (!$this->Account->exists()) {
-				$this->Session->setFlash(__("Account does not exist.", true));
-				$this->redirect('/');
-			}
-			$this->data[$this->modelName]['id'] = $id;
+			$this->data = $this->{$this->modelName}->read(null, $id);
+			unset($this->data[$this->modelName]['password']);
 		}
 		$this->set('title_for_layout', __("Edit Account", true));
 	}
