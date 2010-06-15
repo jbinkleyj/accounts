@@ -70,11 +70,10 @@ Try connecting to an SMTP server to send mail.  Put this in beforeFilter() in /a
 
 ## Todo
 
-* Delete account
-* Success and delete emails
-* Configurable activated, banned etc. fields
-* Move login singleton out of vendors
-* Changeable login field
-* Changeable model (test)
-* Preserve any form submissions that prompted login
+* 'Delete account' button
+* Successfully signed up / deleted email
+* Configurable fields (activated, banned etc.)
+* Changeable login field (from email to username etc.)
+* Changeable model (half done)
+* Preserve any form submissions that prompted login (but do not post!)
 * Ajax login

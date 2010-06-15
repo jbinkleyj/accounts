@@ -40,7 +40,7 @@ class AccountsComponent extends Object {
 		$this->controller =& $controller;
 		// Load the login singleton, where we can access logged in user info
 		// from anywhere.
-		App::import('Vendor', 'Accounts.Login');
+		App::import('Libs', 'Accounts.Login');
 		// Auth component dependancy.
 		$this->Auth =& $controller->Auth;
 		if (!is_a($this->Auth, 'AuthComponent')) {
