@@ -3,16 +3,13 @@
 	<?php if (!Login::exists()): ?>
 
 		<?php
-		echo $form->create('Account', array(
-			'action' => 'login',
-			'url' => array(
-				'plugin' => 'accounts',
-				'controller' => 'accounts',
-				'action' => 'login'
-			)
-		));
-		echo $form->input('email', array('id' => 'LoginEmail'));
-		echo $form->input('password', array('id' => 'LoginPassword'));
+		echo $form->create(Configure::read('accounts.modelName'), array('url' => array(
+			'plugin' => 'accounts',
+			'controller' => 'accounts',
+			'action' => 'login'
+		)));
+		echo $form->input(Configure::read('accounts.fields.username'), array('id' => 'LoginBarUsername'));
+		echo $form->input(Configure::read('accounts.fields.password'), array('id' => 'LoginBarPassword'));
 		echo $form->input('remember_me', array('id' => 'LoginRemember', 'type' => 'checkbox'));
 		echo $form->end(__("Login", true));
 		?>
@@ -32,12 +29,12 @@
 	<?php else: ?>
 
 		<p>
-			<?php echo __("Logged in as ", true) . Login::get('Account.email'); ?>.
+			<?php echo __("Logged in as ", true) . Login::get(Configure::read('accounts.fields.username')); ?>.
 			<?php echo $html->link(__("Account Settings", true), array(
 				'plugin' => 'accounts',
 				'controller' => 'accounts',
 				'action' => 'edit',
-				Login::get('Account.id')
+				Login::get('id')
 			)); ?>
 			<?php echo $html->link(__("Logout", true), array(
 				'plugin' => 'accounts',

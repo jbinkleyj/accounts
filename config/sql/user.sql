@@ -1,10 +1,9 @@
-CREATE TABLE IF NOT EXISTS `accounts` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `email` tinytext NOT NULL,
   `password` tinytext NOT NULL,
   `activated` tinyint(1) NOT NULL,
   `banned` tinyint(1) NOT NULL,
-  `access` tinyint(4) NOT NULL,
   `last_login` datetime NOT NULL,
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL,

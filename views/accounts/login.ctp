@@ -1,9 +1,13 @@
 <div class="login form">
 <?php
 echo $session->flash('auth');
-echo $form->create('Account', array('action' => 'login'));
-echo $form->input('email');
-echo $form->input('password');
+echo $form->create(Configure::read('accounts.modelName'), array('url' => array(
+	'plugin' => 'accounts',
+	'controller' => 'accounts',
+	'action' => 'login'
+)));
+echo $form->input(Configure::read('accounts.fields.username'), array('id' => 'LoginUsername'));
+echo $form->input(Configure::read('accounts.fields.password'), array('id' => 'LoginPassword'));
 echo $form->input('remember_me', array('type' => 'checkbox'));
 echo $form->submit(__("Submit", true));
 echo $form->end();
@@ -32,7 +36,7 @@ echo $form->end();
 				'plugin' => 'accounts',
 				'controller' => 'accounts',
 				'action' => 'send_activation_email',
-				$this->data['Account']['email']
+				@$this->data[Configure::read('accounts.modelName')][Configure::read('accounts.fields.username')]
 			)); ?>
 		</li>
 	</ul>

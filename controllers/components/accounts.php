@@ -13,34 +13,18 @@
  */
 class AccountsComponent extends Object {
 
-	var $settings = array(
-		'model' => 'Accounts.Account',
-
-		'emailFrom' => null,
-		'emailActivationSubject' => "Please activate your account",
-		'emailResetPasswordSubject' => "You have requested that your password be reset",
-		'emailSuccessSubject' => "You have successfully signed up!",
-		'emailPasswordResetSubject' => "Resetting your password",
-		'emailDeleteEmail' => "We're sorry to see you go",
-		'emailLayout' => 'default',
-		'emailSendAs' => 'text',
-
-		'redirectAfterActivation' => '/',
-		'redirectAfterResetPassword' => '/',
-		'redirectAfterLogin' => '/',
-		'redirectAfterLogout' => '/',
-		'redirectAfterEdit' => '/'
-	);
-
+	var $__settings;
 	var $controller;
-	var $Account;
+	var $User;
 	var $Auth, $Email, $Session, $Cookie;
 
-	function initialize(&$controller, $settings) {
+	function initialize(&$controller) {
 		$this->controller =& $controller;
+
 		// Load the login singleton, where we can access logged in user info
 		// from anywhere.
 		App::import('Libs', 'Accounts.Login');
+
 		// Auth component dependancy.
 		$this->Auth =& $controller->Auth;
 		if (!is_a($this->Auth, 'AuthComponent')) {
@@ -61,39 +45,53 @@ class AccountsComponent extends Object {
 		if (!is_a($this->Cookie, 'CookieComponent')) {
 			trigger_error("Cookie component not loaded in controller.  Try putting something like \"var \$components = array('Auth', 'Email', 'Session', 'Cookie', 'Accounts.Accounts');\" in app/app_controller.php.", E_USER_ERROR);
 		}
-		// Settings.
-		$this->settings = Set::merge($this->settings, $settings);
-		$errors = array();
-		if (!$this->settings['emailFrom']) {
-			trigger_error("Please set 'emailFrom' for the Accounts.Accounts component.  E.g. \"var \$components = array('Accounts.Accounts' => array('emailFrom' => 'myemail@myhost.com', ... );\".", E_USER_WARNING);
+
+		// Load config.
+		require(dirname(dirname(dirname(__FILE__))) . DS . 'config' . DS . 'accounts.php');
+		// Extract model name from model setting, in case it's in a plugin.
+		$modelParts = explode('.', Configure::read('accounts.model'));
+		$this->modelName = $modelParts[count($modelParts)-1];
+		Configure::write('accounts.modelName', $this->modelName);
+		// Load config into $this->__settings.
+		$this->__settings = Configure::read('accounts');
+
+		// Load the user model so we can save last login time.
+		$this->User =& $controller->{$this->modelName};
+		if (!isset($this->User)) {
+			$controller->loadModel($this->__settings['model']);
 		}
-		$modelParts = explode('.', $this->settings['model']);
-		$this->settings['modelName'] = $modelParts[count($modelParts)-1];
-		// Load the Account model so we can save last login time.
-		$this->Account =& $controller->{$this->settings['modelName']};
-		if (!isset($this->Account)) {
-			$controller->loadModel($this->settings['model']);
+		// Attach AccountsBehavior to user model.
+		$this->User->Behaviors->attach('Accounts.Accounts');
+		if (!is_a($this->User->Behaviors->Accounts, 'AccountsBehavior')) {
+			trigger_error("Failed to load AccountsBehavior.", E_USER_ERROR);
 		}
+
 	}
 
 	function setupAuth() {
-		$this->Auth->userModel = $this->settings['modelName'];
-		$this->Auth->fields = array('username' => 'email', 'password' => 'password');
-		$this->Auth->userScope = array('activated' => true, 'banned' => false);
-		$this->Auth->loginError = __("Login failed.  Invalid email or password.  Please make sure you have activated your account.", true);
+		$this->Auth->userModel = $this->modelName;
+		$this->Auth->fields = array(
+			'username' => Configure::read('accounts.fields.username'),
+			'password' => Configure::read('accounts.fields.password')
+		);
+		$this->Auth->userScope = array(
+			$this->__settings['fields']['activated'] => true,
+			$this->__settings['fields']['banned'] => false
+		);
+		$this->Auth->loginError = __("Login failed.  Invalid " . Inflector::humanize($this->__settings['fields']['username']) . " or password.  Please make sure you have activated your account.", true);
 		$this->Auth->loginAction = array(
 			'plugin' => 'accounts',
 			'controller' => 'accounts',
 			'action' => 'login'
 		);
-		$this->Auth->loginRedirect = $this->settings['redirectAfterLogin'];
-		$this->Auth->logoutRedirect = $this->settings['redirectAfterLogout'];
+		$this->Auth->loginRedirect = $this->__settings['redirectAfterLogin'];
+		$this->Auth->logoutRedirect = $this->__settings['redirectAfterLogout'];
 		$this->Auth->autoRedirect = false;
 		$this->Auth->allow(array('view', 'display'));
 		// Put the auth info in the Login singleton for easy access.
 		Login::set($this->Auth->user());
-		// Update last login in Account model.
-		$this->Account->updateLastLogin();
+		// Update last login in user model.
+		$this->User->updateLastLogin();
 		// Manually login user if they have ticked remember me.
 		$this->rememberMe();
 	}
@@ -101,34 +99,34 @@ class AccountsComponent extends Object {
 	function rememberMe() {
 		if (Login::exists()) {
 			// Remember the user.
-			if (!empty($this->controller->data[$this->settings['modelName']]['remember_me'])) {
-				$this->Cookie->write('rememberMe', Login::get($this->settings['modelName'] . '.id'), true, '30 days');
+			if (!empty($this->controller->data[$this->modelName]['remember_me'])) {
+				$this->Cookie->write('rememberMe', Login::get($this->modelName . '.id'), true, '30 days');
 			}
 		} else {
 			// Already remembered?  Login.
 			$id = $this->Cookie->read('rememberMe');
 			if ($id) {
-				$account = $this->Account->findById($id);
-				$this->manualLogin($account);
+				$user = $this->User->findById($id);
+				$this->manualLogin($user);
 			}
 		}
 	}
 
-	function manualLogin($account) {
+	function manualLogin($user) {
 		// Login using an Account row instead of username and password.
-		if (isset($account[$this->settings['modelName']]['password'])) {
-			unset($account[$this->settings['modelName']]['password']);
+		if (isset($user[$this->modelName][Configure::read('accounts.fields.password')])) {
+			unset($user[$this->modelName][Configure::read('accounts.fields.password')]);
 		}
-		$this->controller->Session->write('Auth', $account);
+		$this->controller->Session->write('Auth', $user);
 		// Put the auth info in the Login singleton for easy access.
 		Login::set($this->Auth->user());
 		// Update last login in Account model.
-		$this->Account->updateLastLogin();
+		$this->User->updateLastLogin();
 	}
 
-	function sendActivationEmail($email, $code) {
-		$this->__setupEmail($email, __($this->settings['emailActivationSubject'], true), 'activation');
-		$this->controller->set(compact('email', 'code'));
+	function sendActivationEmail($email, $username, $code) {
+		$this->__setupEmail($email, __($this->__settings['emailActivationSubject'], true), 'activation');
+		$this->controller->set(compact('username', 'code'));
 		$this->Email->send();
 		return !$this->__emailError();
 	}
@@ -137,25 +135,21 @@ class AccountsComponent extends Object {
 
 	}
 
-	function sendResetPasswordEmail($email, $code) {
-		$this->__setupEmail($email, __($this->settings['emailResetPasswordSubject'], true), 'reset_password');
-		$this->controller->set(compact('email', 'code'));
+	function sendResetPasswordEmail($email, $username, $code) {
+		$this->__setupEmail($email, __($this->__settings['emailResetPasswordSubject'], true), 'reset_password');
+		$this->controller->set(compact('username', 'code'));
 		$this->Email->send();
 		return !$this->__emailError();
-	}
-
-	function sendDeleteEmail() {
-
 	}
 
 	function __setupEmail($to, $subject, $template) {
 		$this->Email->reset();
 		$this->Email->to = $to;
-		$this->Email->from = $this->settings['emailFrom'];
+		$this->Email->from = $this->__settings['emailFrom'];
 		$this->Email->subject = $subject;
 		$this->Email->template = $template;
-		$this->Email->layout = $this->settings['emailLayout'];
-		$this->Email->sendAs = $this->settings['emailSendAs'];
+		$this->Email->layout = $this->__settings['emailLayout'];
+		$this->Email->sendAs = $this->__settings['emailSendAs'];
 	}
 
 	function __emailError() {

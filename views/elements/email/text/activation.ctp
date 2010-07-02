@@ -5,6 +5,6 @@
 	'plugin' => 'accounts',
 	'controller' => 'accounts',
 	'action' => 'activate',
-	$email,
+	$username,
 	$code
 ), true); ?>

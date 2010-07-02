@@ -1,7 +1,10 @@
 <div class="reset_password form">
 <?php
-echo $form->create('Account', array('url' => array(
-	$email,
+echo $form->create(Configure::read('accounts.modelName'), array('url' => array(
+	'plugin' => 'accounts',
+	'controller' => 'accounts',
+	'action' => 'reset_password',
+	$username,
 	$code
 )));
 echo $form->inputs(array(

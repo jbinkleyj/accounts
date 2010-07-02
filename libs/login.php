@@ -39,9 +39,12 @@ class Login {
 	function get($path) {
 		$data =& Login::getInstance();
 		$path = str_replace('.', '/', $path);
+		if (strpos($path, '/') === false) {
+			$path = '/' . Configure::read('accounts.modelName') . '/' . $path;
+		}
 		if ($path{0} != '/') {
 			// Must start with a /.
-			$path = sprintf('/%s', $path);
+			$path = "/$path";
 		}
 		if ($value = Set::extract($path, $data)) {
 			return $value[0];

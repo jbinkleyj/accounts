@@ -5,7 +5,7 @@
 	'plugin' => 'accounts',
 	'controller' => 'accounts',
 	'action' => 'reset_password',
-	$email,
+	$username,
 	$code
 ), true); ?>
 
