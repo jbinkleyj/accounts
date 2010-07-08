@@ -59,6 +59,6 @@ $default = array(
 );
 
 $bootstrapped = Configure::read('accounts');
-Configure::write('accounts', Set::merge($bootstrapped, $default));
+Configure::write('accounts', Set::merge($default, $bootstrapped));
 
 ?>
