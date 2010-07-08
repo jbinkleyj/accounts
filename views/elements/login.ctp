@@ -8,9 +8,9 @@
 			'controller' => 'accounts',
 			'action' => 'login'
 		)));
-		echo $form->input(Configure::read('accounts.fields.username'), array('id' => 'LoginBarUsername'));
-		echo $form->input(Configure::read('accounts.fields.password'), array('id' => 'LoginBarPassword'));
-		echo $form->input('remember_me', array('id' => 'LoginRemember', 'type' => 'checkbox'));
+		echo $form->input(Configure::read('accounts.fields.username'), array('id' => 'LoginBarUsername', 'error' => false));
+		echo $form->input(Configure::read('accounts.fields.password'), array('id' => 'LoginBarPassword', 'error' => false));
+		echo $form->input('remember_me', array('id' => 'LoginRemember', 'type' => 'checkbox', 'error' => false));
 		echo $form->end(__("Login", true));
 		?>
 
