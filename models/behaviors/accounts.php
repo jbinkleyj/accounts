@@ -47,6 +47,7 @@ class AccountsBehavior extends ModelBehavior {
 			'message'=> "Please enter a password between 6 and 100 characters long.",
 		)
 	);
+	var $__validateBackup = null;
 
 	function setup(&$model) {
 		$fields = Configure::read('accounts.fields');
@@ -69,25 +70,45 @@ class AccountsBehavior extends ModelBehavior {
 	}
 
 	function beforeValidate(&$model, $options) {
-		// Some security measures to prevent users injecting values into forms.
-		$protectedFields = Configure::read('accounts.fields');
-		$protectedFields['new_password'] = 'new_password';
+		// Backup validation array so we can make temporary changes.
+		$this->__validateBackup = $model->validate;
+		$fields = Configure::read('accounts.fields');
+		$fields['new_password'] = 'new_password';
+		$fields['old_password'] = 'old_password';
+		$fields['confirm_password'] = 'confirm_password';
 		// Stop the password being set directly.
-		unset($protectedFields['password']);
-		if (isset($options['fieldList'][Configure::read('accounts.fields.password')]) && isset($model->data[$model->alias][Configure::read('accounts.fields.password')]) || in_array(Configure::read('accounts.fields.password'), $options['fieldList'])) {
-			trigger_error("You cannot set the password directly, you must use new_password.", E_USER_WARNING);
+		if (isset($model->data[$model->alias][$fields['password']]) || in_array($fields['password'], $options['fieldList'])) {
+			trigger_error("You cannot set the password directly, you must set the 'new_password' field instead.", E_USER_WARNING);
 			return false;
 		}
-		// If email is used as username, don't try to check username.
-		if ($protectedFields['username'] == $protectedFields['email']) {
-			unset($protectedFields['username']);
-		}
-		foreach ($protectedFields as $k => $field) {
-			if (!in_array($field, $options['fieldList'])) {
-				// Don't allow fields to be set unless explicitly specified
-				// when calling Model::save().
-				if (empty($options['fieldList']) && isset($model->data[$model->alias][$field])) {
-					trigger_error("'$field' is protected and cannot be set without specifying it in the \$fieldList argument of $model->alias::save().", E_USER_WARNING);
+		// Accounts mode prevents users injecting values into forms when
+		// updating a user.  It also removes irrelevant validation so it doesn't
+		// bug you with required fields and such.
+		if (!empty($model->accountsMode)) {
+			// In accounts mode, allow access only to accounts plugin fields.
+			foreach ($model->validate as $k => $v) {
+				// Disable irrelevant validation.
+				if (!in_array($k, $fields) && isset($model->validate[$k])) {
+					unset($model->validate[$k]);
+				}
+			}
+			foreach ($model->data[$model->alias] as $k => $v) {
+				// Error if field is set in model.
+				if (!in_array($k, $fields) && isset($model->data[$model->alias][$fields[$k]])) {
+					trigger_error("You cannot set field '{$fields[$k]}' when the user model is in accounts mode, you may only set accounts plugin fields.  Use \$this->{$model->alias}->accountsMode = true;", E_USER_WARNING);
+					return false;
+				}
+			}
+		} else {
+			// In normal mode, allow access only to other fields.
+			foreach ($fields as $field) {
+				// Disable irrelevant validation.
+				if (isset($model->validate[$field])) {
+					unset($model->validate[$field]);
+				}
+				// Error if field is set in model.
+				if (isset($model->data[$model->alias][$field])) {
+					trigger_error("You cannot set field '$field' when the user model is in accounts mode.  Use \$this->{$model->alias}->accountsMode = true;", E_USER_WARNING);
 					return false;
 				}
 			}
@@ -116,6 +137,15 @@ class AccountsBehavior extends ModelBehavior {
 		}
 	}
 
+	function afterValidate(&$model) {
+		// Restore any backed up validation.
+		if (!empty($this->__validateBackup)) {
+			$model->validate = $this->__validateBackup;
+		}
+		// Reset accounts mode.
+		$model->accountsMode = false;
+	}
+
 	function beforeSave(&$model) {
 		// Hash and prepare new password for saving.
 		$newPassword =& $model->data[$model->alias]['new_password'];
@@ -132,6 +162,7 @@ class AccountsBehavior extends ModelBehavior {
 		));
 		$data[$model->alias]['id'] = $id;
 		$fields[] = 'id';
+		$this->User->accountsMode = true;
 		return $model->save($data, $validate, $fields);
 	}
 
@@ -191,6 +222,7 @@ class AccountsBehavior extends ModelBehavior {
 		}
 		// If the code matches the hash, activate the user.
 		if ($code == Security::hash(Configure::read('Security.salt') . $email . $created)) {
+			$this->User->accountsMode = true;
 			$result = $model->save(array($model->alias => array(
 				'id' => $id,
 				Configure::read('accounts.fields.activated') => true
@@ -224,6 +256,7 @@ class AccountsBehavior extends ModelBehavior {
 			$model->id = $id;
 		}
 		$model->set(Configure::read('accounts.fields.banned'), $value);
+		$this->User->accountsMode = true;
 		if (!$model->save()) {
 			trigger_error("Could not ban user.", E_USER_WARNING);
 		}
@@ -237,6 +270,7 @@ class AccountsBehavior extends ModelBehavior {
 	function updateLastLogin(&$model) {
 		// Set last_login to now, if we're logged in.
 		if (Login::exists()) {
+			$this->User->accountsMode = true;
 			$result = $model->save(array($model->alias => array(
 				'id' => Login::get('id'),
 				Configure::read('accounts.fields.last_login') => date('Y-m-d h:i:s')

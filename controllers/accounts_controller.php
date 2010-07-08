@@ -44,6 +44,7 @@ class AccountsController extends AccountsAppController {
 	function sign_up() {
 		if (!empty($this->data)) {
 			$this->User->create();
+			$this->User->accountsMode = true;
 			if ($this->User->save($this->data, true, array(
 				Configure::read('accounts.fields.username'),
 				'new_password',
@@ -176,6 +177,7 @@ class AccountsController extends AccountsAppController {
 				unset($this->data[$this->modelName]['new_password']);
 				unset($this->data[$this->modelName]['confirm_password']);
 			}
+			$this->User->accountsMode = true;
 			if ($this->User->save($this->data, true, array(
 				// Specify fields.
 				Configure::read('accounts.fields.username'),
