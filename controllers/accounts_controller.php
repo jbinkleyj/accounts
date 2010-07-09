@@ -47,6 +47,7 @@ class AccountsController extends AccountsAppController {
 			$this->User->accountsMode = true;
 			if ($this->User->save($this->data, true, array(
 				Configure::read('accounts.fields.username'),
+				Configure::read('accounts.fields.email'),
 				'new_password',
 				'confirm_password'
 			))) {

@@ -185,7 +185,7 @@ class AccountsBehavior extends ModelBehavior {
 		if (Configure::read('accounts.fields.username') == Configure::read('accounts.fields.email')) {
 			return $username;
 		} else {
-			$model->field(Configure::read('accounts.fields.email'), array(
+			return $model->field(Configure::read('accounts.fields.email'), array(
 				$model->alias . '.' . Configure::read('accounts.fields.username') => $username
 			));
 		}
@@ -210,21 +210,20 @@ class AccountsBehavior extends ModelBehavior {
 			$model->validationErrors['_activate'] = "Specified account does not exist.";
 			return false;
 		}
-		extract($user[$model->alias]);
 		// Some extra security.
-		if ($activated) {
+		if ($user[$model->alias][Configure::read('accounts.fields.activated')]) {
 			$model->validationErrors['_activate'] = "Your account has already been activated.";
 			return false;
 		}
-		if ($banned) {
+		if ($user[$model->alias][Configure::read('accounts.fields.banned')]) {
 			$model->validationErrors['_activate'] = "Your account has been banned.";
 			return false;
 		}
 		// If the code matches the hash, activate the user.
-		if ($code == Security::hash(Configure::read('Security.salt') . $email . $created)) {
+		if ($code == Security::hash(Configure::read('Security.salt') . $user[$model->alias][Configure::read('accounts.fields.username')] . $user[$model->alias]['created'])) {
 			$model->accountsMode = true;
 			$result = $model->save(array($model->alias => array(
-				'id' => $id,
+				'id' => $user[$model->alias]['id'],
 				Configure::read('accounts.fields.activated') => true
 			)), true, array('id', Configure::read('accounts.fields.activated')));
 			if (!$result) {
