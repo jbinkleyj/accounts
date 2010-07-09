@@ -114,12 +114,12 @@ class AccountsBehavior extends ModelBehavior {
 			}
 		}
 		// Validate password.
-		$oldPassword =& $model->data[$model->alias]['old_password'];
-		$newPassword =& $model->data[$model->alias]['new_password'];
-		$confirmPassword =& $model->data[$model->alias]['confirm_password'];
+		$newPassword = @$model->data[$model->alias]['new_password'];
 		if ($newPassword) {
+			$confirmPassword = @$model->data[$model->alias]['confirm_password'];
 			// If updating, make sure old password is given and is correct.
 			if (!empty($model->data[$model->alias]['id'])) {
+				$oldPassword = @$model->data[$model->alias]['old_password'];
 				$correct = $model->find('count', array(
 					'conditions' => array(
 						$model->alias . '.id' => $model->data[$model->alias]['id'],
@@ -148,10 +148,12 @@ class AccountsBehavior extends ModelBehavior {
 
 	function beforeSave(&$model) {
 		// Hash and prepare new password for saving.
-		$newPassword =& $model->data[$model->alias]['new_password'];
+		$newPassword = @$model->data[$model->alias]['new_password'];
 		if (!empty($newPassword)) {
 			$model->data[$model->alias][Configure::read('accounts.fields.password')] = Security::hash(Configure::read('Security.salt') . $newPassword);
-			$model->whitelist[] = 'password';
+			if (!empty($model->whitelist)) {
+				$model->whitelist[] = 'password';
+			}
 		}
 		return true;
 	}

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Version: 0.6 (usable, but needs testing and some methods may change in the near future)
+Status: usable, but needs testing and some methods may change in the near future.
 
 A CakePHP plugin for user login.  It uses cake's native auth to setup an environment ready for users to sign up, reset password, remember me and the like with as little effort from you as possible (while being flexible and easy to extend).
 
