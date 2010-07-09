@@ -45,12 +45,7 @@ class AccountsController extends AccountsAppController {
 		if (!empty($this->data)) {
 			$this->User->create();
 			$this->User->accountsMode = true;
-			if ($this->User->save($this->data, true, array(
-				Configure::read('accounts.fields.username'),
-				Configure::read('accounts.fields.email'),
-				'new_password',
-				'confirm_password'
-			))) {
+			if ($this->User->save($this->data)) {
 				// Send activation email.
 				$this->send_activation_email($this->data[$this->modelName][Configure::read('accounts.fields.username')]);
 				return;
@@ -179,12 +174,7 @@ class AccountsController extends AccountsAppController {
 				unset($this->data[$this->modelName]['confirm_password']);
 			}
 			$this->User->accountsMode = true;
-			if ($this->User->save($this->data, true, array(
-				// Specify fields.
-				Configure::read('accounts.fields.username'),
-				Configure::read('accounts.fields.email'),
-				'new_password'
-			))) {
+			if ($this->User->save($this->data, true)) {
 				// Update session with manual login and redirect.
 				$this->Session->setFlash(__("Changes saved.", true));
 				$user = $this->User->read();
