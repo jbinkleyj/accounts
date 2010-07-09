@@ -1,6 +1,6 @@
 <div class="login form">
 <?php
-echo $session->flash('auth');
+$session->flash('auth');
 echo $form->create(Configure::read('accounts.modelName'), array('url' => array(
 	'plugin' => 'accounts',
 	'controller' => 'accounts',
