@@ -94,7 +94,7 @@ class AccountsBehavior extends ModelBehavior {
 			}
 			foreach ($model->data[$model->alias] as $k => $v) {
 				// Error if field is set in model.
-				if (!in_array($k, $fields) && isset($model->data[$model->alias][$fields[$k]])) {
+				if (!in_array($k, $fields) && isset($model->data[$model->alias][@$fields[$k]])) {
 					trigger_error("You cannot set field '{$fields[$k]}' when the user model is in accounts mode, you may only set accounts plugin fields.  Use \$this->{$model->alias}->accountsMode = true;", E_USER_WARNING);
 					return false;
 				}
@@ -162,7 +162,7 @@ class AccountsBehavior extends ModelBehavior {
 		));
 		$data[$model->alias]['id'] = $id;
 		$fields[] = 'id';
-		$this->User->accountsMode = true;
+		$model->accountsMode = true;
 		return $model->save($data, $validate, $fields);
 	}
 
@@ -222,7 +222,7 @@ class AccountsBehavior extends ModelBehavior {
 		}
 		// If the code matches the hash, activate the user.
 		if ($code == Security::hash(Configure::read('Security.salt') . $email . $created)) {
-			$this->User->accountsMode = true;
+			$model->accountsMode = true;
 			$result = $model->save(array($model->alias => array(
 				'id' => $id,
 				Configure::read('accounts.fields.activated') => true
@@ -256,7 +256,7 @@ class AccountsBehavior extends ModelBehavior {
 			$model->id = $id;
 		}
 		$model->set(Configure::read('accounts.fields.banned'), $value);
-		$this->User->accountsMode = true;
+		$model->accountsMode = true;
 		if (!$model->save()) {
 			trigger_error("Could not ban user.", E_USER_WARNING);
 		}
@@ -270,7 +270,7 @@ class AccountsBehavior extends ModelBehavior {
 	function updateLastLogin(&$model) {
 		// Set last_login to now, if we're logged in.
 		if (Login::exists()) {
-			$this->User->accountsMode = true;
+			$model->accountsMode = true;
 			$result = $model->save(array($model->alias => array(
 				'id' => Login::get('id'),
 				Configure::read('accounts.fields.last_login') => date('Y-m-d h:i:s')
