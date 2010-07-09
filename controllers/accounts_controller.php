@@ -38,7 +38,7 @@ class AccountsController extends AccountsAppController {
 	function index() {
 		$users = $this->paginate($this->modelName);
 		$this->set(compact('accounts'));
-		$this->set('title_for_layout', __("Manage Accounts", true));
+		$this->set('title_for_layout', $this->pageTitle = __("Manage Accounts", true));
 	}
 
 	function sign_up() {
@@ -53,7 +53,7 @@ class AccountsController extends AccountsAppController {
 				$this->Session->setFlash(__("Please correct the below errors and try again.", true));
 			}
 		}
-		$this->set('title_for_layout', __("Sign Up", true));
+		$this->set('title_for_layout', $this->pageTitle = __("Sign Up", true));
 	}
 
 	function send_activation_email($username = null) {
@@ -70,7 +70,7 @@ class AccountsController extends AccountsAppController {
 			if ($code) {
 				$email = $this->User->findEmailFromUsername($username);
 				if ($this->Accounts->sendActivationEmail($email, $username, $code)) {
-					$this->set('title_for_layout', __("Activation Email Sent", true));
+					$this->set('title_for_layout', $this->pageTitle = __("Activation Email Sent", true));
 					$this->render('send_activation_email_success');
 				} else {
 					$this->Session->setFlash(__("Sorry, there was a problem sending you an activation email.", true));
@@ -103,7 +103,7 @@ class AccountsController extends AccountsAppController {
 			$this->data[$this->modelName][Configure::read('accounts.fields.username')] = $email;
 		}
 		if ($username) {
-			$this->set('title_for_layout', __("Reset Password", true));
+			$this->set('title_for_layout', $this->pageTitle = __("Reset Password", true));
 			$code = $this->User->generateResetPasswordCode($username);
 			if ($code) {
 				$email = $this->User->findEmailFromUsername($username);
@@ -139,7 +139,7 @@ class AccountsController extends AccountsAppController {
 		} else {
 			$this->Session->setFlash(__(Inflector::humanize(Configure::read('accounts.fields.username')) . " or reset password code incorrect.  Please check that you are visiting the link exactly as it is in your email.", true));
 		}
-		$this->set('title_for_layout', __("Reset Password", true));
+		$this->set('title_for_layout', $this->pageTitle = __("Reset Password", true));
 		$this->set(compact('username', 'code'));
 	}
 
@@ -187,7 +187,7 @@ class AccountsController extends AccountsAppController {
 			$this->data = $this->User->read(null, $id);
 			unset($this->data[$this->modelName][Configure::read('accounts.fields.password')]);
 		}
-		$this->set('title_for_layout', __("Edit Account", true));
+		$this->set('title_for_layout', $this->pageTitle = __("Edit Account", true));
 	}
 
 }
