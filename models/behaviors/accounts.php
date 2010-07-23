@@ -123,7 +123,7 @@ class AccountsBehavior extends ModelBehavior {
 				$correct = $model->find('count', array(
 					'conditions' => array(
 						$model->alias . '.id' => $model->data[$model->alias]['id'],
-						$model->alias . '.' . Configure::read('accounts.fields.password') => Security::hash(Configure::read('Security.salt') . $oldPassword)
+						$model->alias . '.' . Configure::read('accounts.fields.password') => Security::hash($oldPassword, null, true)
 					)
 				));
 				if (!$correct) {
@@ -150,7 +150,7 @@ class AccountsBehavior extends ModelBehavior {
 		// Hash and prepare new password for saving.
 		$newPassword = @$model->data[$model->alias]['new_password'];
 		if (!empty($newPassword)) {
-			$model->data[$model->alias][Configure::read('accounts.fields.password')] = Security::hash(Configure::read('Security.salt') . $newPassword);
+			$model->data[$model->alias][Configure::read('accounts.fields.password')] = Security::hash($newPassword, null, true);
 			if (!empty($model->whitelist)) {
 				$model->whitelist[] = 'password';
 			}
@@ -198,11 +198,7 @@ class AccountsBehavior extends ModelBehavior {
 		if (!$user) {
 			return false;
 		}
-		return Security::hash(
-			Configure::read('Security.salt')
-			. $user[$model->alias][Configure::read('accounts.fields.username')]
-			. $user[$model->alias]['created']
-		);
+		return Security::hash($user[$model->alias][Configure::read('accounts.fields.username')] . $user[$model->alias]['created'], null, true);
 	}
 
 	function activate(&$model, $username = null, $code = false) {
@@ -222,7 +218,7 @@ class AccountsBehavior extends ModelBehavior {
 			return false;
 		}
 		// If the code matches the hash, activate the user.
-		if ($code == Security::hash(Configure::read('Security.salt') . $user[$model->alias][Configure::read('accounts.fields.username')] . $user[$model->alias]['created'])) {
+		if ($code == Security::hash($user[$model->alias][Configure::read('accounts.fields.username')] . $user[$model->alias]['created'], null, true)) {
 			$model->accountsMode = true;
 			$result = $model->save(array($model->alias => array(
 				'id' => $user[$model->alias]['id'],
@@ -244,11 +240,7 @@ class AccountsBehavior extends ModelBehavior {
 		if (!$user) {
 			return false;
 		}
-		return Security::hash(
-			Configure::read('Security.salt')
-			. $user[$model->alias][Configure::read('accounts.fields.username')]
-			. $user[$model->alias][Configure::read('accounts.fields.password')]
-		);
+		return Security::hash($user[$model->alias][Configure::read('accounts.fields.username')] . $user[$model->alias][Configure::read('accounts.fields.password')], null, true);
 	}
 
 	function ban(&$model, $id = null, $value = true) {
