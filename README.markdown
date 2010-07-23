@@ -71,6 +71,13 @@ So you want to login with a username instead of an email address?  Simply add th
 
 Accounts uses a model called 'User'.  Since this doesn't exist, cake creates it on the fly and then Accounts adds the behavior.  If you need to add functionality or validation to the model, simply create a model by the same name in your app.
 
+### Overriding Auth Options
+
+Simply change them after calling $this->Accounts->setupAuth(), for instance we can change the default allow:
+
+	$this->Accounts->setupAuth();
+	$this->Auth->allow('foo');
+
 ## Troubleshooting
 
 ### Emails not sending?
