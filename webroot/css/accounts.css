@@ -55,14 +55,14 @@
 /* Modal Windows */
 
 .modal {
-	position: absolute;
+	position: fixed;
 	left: 0px;
 	top: 0px;
 	width: 100%;
 	height: 100%;
 	text-align: center;
 	z-index: 1000;
-	background: url(../img/modal-background.png);
+	background: url(../../accounts/img/modal-background.png);
 }
 .modal .actions {
 	width: auto;
