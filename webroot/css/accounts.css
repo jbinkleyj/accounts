@@ -39,6 +39,11 @@
 #modalLoginMenu {
 	padding: 10px;
 	float: right;
+	background-color: #ddd;
+	color: black;
+	border: 1px solid #999;
+	border-top: none;
+	border-right: none;
 }
 /* Modal Windows */
 
