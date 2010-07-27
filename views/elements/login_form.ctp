@@ -1,3 +1,4 @@
+<div class="login form">
 <?php
 // Create login form.
 echo $form->create(Configure::read('accounts.modelName'), array(
@@ -33,6 +34,7 @@ echo $form->inputs(array(
 <?php
 echo $form->end();
 ?>
+</div>
 
 <div class="actions">
 	<h3><?php __('Actions'); ?></h3>
@@ -61,3 +63,5 @@ echo $form->end();
 		</li>
 	</ul>
 </div>
+
+<div style="clear: both;"></div>

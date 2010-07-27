@@ -29,7 +29,13 @@
 #login .text, #login .password, #login .checkbox, #login .submit, #login.loggedOut a {
 	margin-right: 10px;
 }
-.text #LoginEmail, .password #LoginPassword {
+#LoginUsername {
+	width: 250px;
+}
+#LoginPassword {
+	width: 150px;
+}
+#login #LoginUsername, #login #LoginPassword {
 	width: 150px;
 }
 #login.loggedOut a {
@@ -45,6 +51,7 @@
 	border-top: none;
 	border-right: none;
 }
+
 /* Modal Windows */
 
 .modal {
@@ -57,8 +64,17 @@
 	z-index: 1000;
 	background: url(../img/modal-background.png);
 }
+#modalLogin .actions {
+	width: auto;
+}
+#modalLogin .actions h3 {
+	margin-top: 0;
+}
+#modalLogin .form {
+	width: 450px;
+}
 .modal .modalWindow {
-	width: 600px;
+	width: 700px;
 	margin: 20px auto;
 	background-color: white;
 	border: 2px solid black;
