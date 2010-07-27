@@ -64,13 +64,13 @@
 	z-index: 1000;
 	background: url(../img/modal-background.png);
 }
-#modalLogin .actions {
+.modal .actions {
 	width: auto;
 }
-#modalLogin .actions h3 {
+.modal .actions h3 {
 	margin-top: 0;
 }
-#modalLogin .form {
+.modal .form {
 	width: 450px;
 }
 .modal .modalWindow {
