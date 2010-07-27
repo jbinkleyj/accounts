@@ -1,5 +1,7 @@
 <div class="login form">
 <?php
+echo $session->flash('auth');
+
 // Create login form.
 echo $form->create(Configure::read('accounts.modelName'), array(
 	'id' => 'loginForm',
