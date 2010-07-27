@@ -47,6 +47,10 @@ Put this just under the header div:
 
 	<?php echo $this->element('login', array('plugin' => 'Accounts')); ?>
 
+OR to open the login form in a javascript window put this just above the header div:
+
+	<?php echo $this->element('modal_login', array('plugin' => 'Accounts')); ?>
+
 ### That's it!
 
 You're done.  Try signing up.
