@@ -39,6 +39,7 @@ class Login {
 	function get($path) {
 		$data =& Login::getInstance();
 		$path = str_replace('.', '/', $path);
+		// if no . or / then assume it's a user model column.
 		if (strpos($path, '/') === false) {
 			$path = '/' . Configure::read('accounts.modelName') . '/' . $path;
 		}
@@ -53,8 +54,8 @@ class Login {
 
 	function justLoggedIn($value = null) {
 		$data =& Login::getInstance();
-		if ($value) {
-			return $data['justLoggedIn'] = true;
+		if (isset($value)) {
+			return $data['justLoggedIn'] = $value;
 		} else {
 			return $data['justLoggedIn'];
 		}
@@ -62,7 +63,7 @@ class Login {
 
 	function exists() {
 		$data =& Login::getInstance();
-		return (BOOL) $data;
+		return (BOOL) Login::get('id');
 	}
 
 }

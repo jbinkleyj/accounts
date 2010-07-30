@@ -8,6 +8,7 @@
 			'controller' => 'accounts',
 			'action' => 'login'
 		)));
+		echo $form->hidden('just_logged_in', array('value' => true));
 		echo $form->input(Configure::read('accounts.fields.username'), array('id' => 'LoginBarUsername', 'error' => false));
 		echo $form->input(Configure::read('accounts.fields.password'), array('id' => 'LoginBarPassword', 'error' => false));
 		echo $form->input('remember_me', array('id' => 'LoginRemember', 'type' => 'checkbox', 'error' => false));

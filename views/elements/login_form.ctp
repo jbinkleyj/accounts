@@ -15,6 +15,7 @@ echo $form->create(Configure::read('accounts.modelName'), array(
 // Username, password, remember me.
 echo $form->inputs(array(
 	'legend' => __("Login", true),
+	'just_logged_in' => array('type' => 'hidden', 'value' => true),
 	Configure::read('accounts.fields.username') => array('id' => 'LoginUsername'),
 	Configure::read('accounts.fields.password') => array('id' => 'LoginPassword'),
 	'remember_me' => array('type' => 'checkbox')

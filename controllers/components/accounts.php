@@ -94,6 +94,13 @@ class AccountsComponent extends Object {
 		$this->User->updateLastLogin();
 		// Manually login user if they have ticked remember me.
 		$this->rememberMe();
+		// Just logged in or already logged in?
+		$justLoggedIn = $this->Session->read('justLoggedIn');
+		Login::justLoggedIn((BOOL) $justLoggedIn);
+	}
+
+	function beforeRender() {
+		$this->Session->delete('justLoggedIn');
 	}
 
 	function rememberMe() {

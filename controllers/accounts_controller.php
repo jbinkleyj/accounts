@@ -145,8 +145,8 @@ class AccountsController extends AccountsAppController {
 
 	function login() {
 		Login::set($this->Auth->user());
-		if (Login::exists() && !empty($this->data)) {
-			Login::justLoggedIn(true);
+		if (Login::exists() && !empty($this->data['User']['just_logged_in'])) {
+			$this->Session->write('justLoggedIn', true);
 			$this->Accounts->rememberMe();
 			$this->redirect($this->Auth->loginRedirect);
 		}
